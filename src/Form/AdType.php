@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Ad;
 use App\Form\AdType;
 use App\Form\ImageType;
+use App\Form\ApplicationType;
 
 
 use Symfony\Component\Form\AbstractType;
@@ -18,31 +19,16 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 
-class AdType extends AbstractType
+class AdType extends ApplicationType
 {
-    /**
-     * Undocumented function
-     *
-     * @param string $label
-     * @param string $placeholder
-     * @param array $options
-     * @return array
-     */
-    private function getConfiguration($label, $placeholder, $options=[]){
-        return array_merge([
-            'label'=>$label,
-            'attr'=>[
-                'placeholder'=>$placeholder
-            ]
-            ], $options);
-    }
+    
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('title', TextType::class,$this->getConfiguration("Titre", "Tapez un super titre pour votre annonce"))
-            ->add('slug',TextType::class, $this->getConfiguration("Adresse web", "Tapez l'adresse web (automatique)",[
-                'required'=>false
-            ]))
+            // ->add('slug',TextType::class, $this->getConfiguration("Adresse web", "Tapez l'adresse web (automatique)",[
+            //     'required'=>false
+            // ]))
             ->add('coverImage', UrlType::class, $this->getConfiguration("Url de l'image principale", "Donnez l'adresse de l'image qui donne vraiment envie"))
             ->add('introduction',TextType::class, $this->getConfiguration("Introduction","Donnez une description globale de l'annonce"))
             ->add('content', TextareaType::class, $this->getConfiguration("Description détaillée", "Tapez une description qui donne vraiment envie de venir chez vous !"))

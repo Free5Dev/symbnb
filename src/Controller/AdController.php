@@ -45,6 +45,8 @@ class AdController extends AbstractController
                 $image->setAd($ad);
                 $manager->persist($image);
             }
+            //relier l'annonce à l'utlisateur connecté avant de persister et de flush
+            $ad->setAuthor($this->getUser());
             $manager->persist($ad);
             $manager->flush();
             // ajouter un message flash pour informer l'utilisateur que tous vas bien
