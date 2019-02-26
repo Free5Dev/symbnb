@@ -14,6 +14,8 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 class AdController extends AbstractController
 {
@@ -31,6 +33,8 @@ class AdController extends AbstractController
     /**
      * Permet de créer une annonce
      *@Route("/ads/new", name="ads_create")
+     *Permet de verifier que l'utilisateur est bien connecté avant d'ajouter l'annonce 
+     *@isGranted("ROLE_USER")
      * @return Response
      */
     public function create(Request $request, ObjectManager $manager){
@@ -66,6 +70,7 @@ class AdController extends AbstractController
     /**
      * Permet d'editer une annonce
      *@Route("/ads/{slug}/edit", name="ads_edit")
+     *@Security("is_granted('ROLE_USER') and user=== ad.getAuthor()", message="Cette annonce ne vous appartient pas , vous ne pouvez pas la modifier")
      * @return Response
      */
     public function edit(Ad $ad, Request $request, ObjectManager $manager){
@@ -107,6 +112,24 @@ class AdController extends AbstractController
             'ad'=>$ad
         ]);
     }
-    
+    /**
+     * Permet de supprimer une annonce
+     *@Route("/ads/{slug}/delete", name="ads_delete")
+     *@Security("is_granted('ROLE_USER') and user == ad.getAuthor()", message="Vous n'avez pas le droit d'acceder à cette ressource")
+     * @param Ad $ad
+     * @param ObjectManager $manager
+     * @return Response
+     */
+    public function delele(Ad $ad, ObjectManager $manager){
+        // suppression de l'annonce qui l'appartient
+        $manager->remove($ad);
+        $manager->flush();
+        // message flash
+        $this->addFlash(
+            'success',
+            "L'annonce <strong>{ad.getTitle()} </strong> à bien été supprimer"
+        );
+        return $this->redirectToRoute('ads_index');
+    }
     
 }
